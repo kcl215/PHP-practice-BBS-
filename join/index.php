@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $form = [
     'name' => '',
     'email' => '',
@@ -36,6 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         if ($type !== 'image/png' && $type !== 'image/jpeg') {
             $error['image'] = 'type';
         }
+    }
+    
+    if (empty($error)) {
+        $_SESSION['form'] = $form;
+        header('Location: check.php');
+        exit();
     }
 
 }
