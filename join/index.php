@@ -1,6 +1,8 @@
 <?php
 $form = [
-    'name' => ''
+    'name' => '',
+    'email' => '',
+    'password' => ''
 ];
 $error = [];
 
@@ -25,6 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         $error['password'] = 'blank';
     } else if (strlen($form['password']) < 4) {
         $error['password'] = 'length';
+    }
+
+    // 画像のチェック（拡張子の指定）
+    $image = $_FILES['image'];
+    if ($image['name'] !== '' && $image['error'] === 0) {
+        $type = mime_content_type($image['tmp_name']);
+        if ($type !== 'image/png' && $type !== 'image/jpeg') {
+            $error['image'] = 'type';
+        }
     }
 
 }
@@ -78,7 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                 <dt>写真など</dt>
                 <dd>
                     <input type="file" name="image" size="35" value=""/>
-                    <p class="error">* 写真などは「.png」または「.jpg」の画像を指定してください</p>
+                    <?php if(isset($error['image']) && $error['image'] === 'type'): ?>
+                        <p class="error">* 写真などは「.png」または「.jpg」の画像を指定してください</p>
+                    <?php endif; ?>
                     <p class="error">* 恐れ入りますが、画像を改めて指定してください</p>
                 </dd>
             </dl>
