@@ -10,6 +10,27 @@ if (isset($_SESSION['form'])) {
 }
 
 // var_dump($_SESSION['form']);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	$db = new mysqli('localhost:8889', 'root', 'root', 'bbs');
+	if(!$db) {
+		die($db -> error);
+	}
+	$stmt = $db -> prepare('insert into members (name, email, password, picture) VALUES(?, ?, ?, ?)');
+	if (!$stmt) {
+		die($db -> error);
+	}
+	// passwordの暗号化
+	$password = password_hash($form['password'], PASSWORD_DEFAULT);
+	$stmt -> bind_param('ssss', $form['name'], $form['email'], $password, $form['image']);
+	$success = $stmt -> execute();
+	if (!$success) {
+		die($db -> error);
+	}
+
+	unset($_SESSION['form']);
+	header('Location: thanks.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
