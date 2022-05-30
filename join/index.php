@@ -1,5 +1,6 @@
 <?php
 session_start();
+require('../library.php');
 
 $form = [
     'name' => '',
@@ -7,11 +8,6 @@ $form = [
     'password' => ''
 ];
 $error = [];
-
-/* htmlspecialcharsを短くする（ファンクション化） */
-function h($value) {
-    return htmlspecialchars($value, ENT_QUOTES);
-}
 
 
 /* フォームの内容をチェック */
