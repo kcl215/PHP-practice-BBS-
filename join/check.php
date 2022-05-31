@@ -12,10 +12,11 @@ if (isset($_SESSION['form'])) {
 // var_dump($_SESSION['form']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	$db = new mysqli('localhost:8889', 'root', 'root', 'bbs');
-	if(!$db) {
-		die($db -> error);
-	}
+	$db = dbconnect();
+	// $db = new mysqli('localhost:8889', 'root', 'root', 'bbs');
+	// if(!$db) {
+	// 	die($db -> error);
+	// }
 	$stmt = $db -> prepare('insert into members (name, email, password, picture) VALUES(?, ?, ?, ?)');
 	if (!$stmt) {
 		die($db -> error);
