@@ -9,6 +9,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
     if ($email === '' || $password === '') {
         $error['login'] = 'blank';
+    } else {
+        // ログインチェック
+        $db = dbconnect();
+        $stmt = $db ->prepare('select id, name, password from members where email=?');
+        if (!$stmt) {
+            die($db->error);
+        }
+        $stmt -> bind_param('s', $email);
+        $success = $stmt -> execute();
+        if (!$success) {
+            die($db->error);
+        }
+        $stmt -> bind_result($id, $name, $hash);
+        $stmt -> fetch();
+
+        if (password_verify($password, $hash)) {
+            // ログイン成功
+        } else {
+            $error['login'] = 'failed';
+        }
     }
 }
 ?>
@@ -37,10 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <dt>メールアドレス</dt>
                 <dd>
                     <input type="text" name="email" size="35" maxlength="255" value="<?php echo h($email) ?>"/>
-                        <?php if (isset($error['login']) && $error['login'] === 'blank'): ?>
-                    <p class="error">* メールアドレスとパスワードをご記入ください</p>
+                    <?php if (isset($error['login']) && $error['login'] === 'blank'): ?>
+                        <p class="error">* メールアドレスとパスワードをご記入ください</p>
                     <?php endif; ?>
-                    <p class="error">* ログインに失敗しました。正しくご記入ください。</p>
+                    <?php if (isset($error['login']) && $error['login'] === 'failed'): ?>
+                        <p class="error">* ログインに失敗しました。正しくご記入ください。</p>
+                    <?php endif; ?>
                 </dd>
                 <dt>パスワード</dt>
                 <dd>
